@@ -15,9 +15,10 @@ function Search() {
   const [searchNotInBoxes, setSearchNotInBoxes] = useState(false)
   const [items, setItems] = useState([]);
   const [showMore, setShowMore] = useState(false);
+  const [nextOffset, setNextOffset] = useState(0);
   const navigate = useNavigate();
 
-  function do_search(value) {
+  function do_search(value, offset) {
     if(!(searchInBoxes||searchNotInBoxes)){
       setItems([])
       return
@@ -59,25 +60,39 @@ function Search() {
         // 'Content-Type': 'application/x-www-form-urlencoded',
       },
       body:JSON.stringify({
-        "filterByColumn": filter
+        "filterByColumn": filter,
+        "offset": offset
       })
     })
       .then(response => response.json())
       .then(data => {
         console.log("data", data)
-        setItems(data['rows'])
+        console.log("offset", offset)
+        setNextOffset(offset+data['rows'].length)
+        console.log("length", data['rows'].length)
+        console.log("next offset", nextOffset)
+        if(offset>0){
+          setItems([...items,...data['rows']])
+          setNextOffset(nextOffset+data['rows'].length)
+        }else{
+          setItems(data['rows'])
+        }
         setShowMore(!data.hasOwnProperty('totalCount'))
       })
   }
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      do_search(searchValue);
+      do_search(searchValue,0);
     }, 600);
     return () => {
       clearTimeout(timeout);
     };
   }, [searchValue, searchInBoxes, searchNotInBoxes]);
+
+  function loadMore(){
+    do_search(searchValue,nextOffset);
+  }
 
 
   return (
@@ -125,7 +140,7 @@ function Search() {
           </div>)
         })}
         <div class="text-center border-bottom">
-          <Button class="btn btn-primary mb-3" hidden={!showMore}>Load more</Button>
+          <Button class="btn btn-primary mb-3" hidden={!showMore} onClick={(e)=>{loadMore()}}>Load more</Button>
         </div>
       </div>
     </>
