@@ -40,7 +40,7 @@ function LabelsPrintout() {
           <div width="14cm" height="7cm" className='box-label box-label-1'>
             <table>
               <tr>
-                <td><QRCode level="H" value={label.id?label.id:makeid()}/></td>
+                <td><QRCode className='qrcode' level="H" value={label.id?label.id:makeid()}/></td>
                 <td><h1>{label.label}</h1><h1>{label.label2}</h1></td>
               </tr>
             </table>

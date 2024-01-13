@@ -29,11 +29,12 @@
 
 .box-label table{
   width: 100%;
+  height: 100%;
 }
 
 .box-label-1 {
   width: 20cm;
-  height: 74mm;
+  height: 70mm;
   border-style: double;
   padding: 2mm;
   margin: 10px;
@@ -44,10 +45,12 @@
 }
 
 .box-label-1 td:nth-child(1){
-  width: 7cm;
+  width: 65mm;
 }
 
-.box-label-1 QRCode {
-  height: "7cm";
-  width: "7cm";
+.box-label-1 .qrcode {
+  height: 60mm;
+  width: 60mm;
+  display: block;
+  margin: auto;
 }
