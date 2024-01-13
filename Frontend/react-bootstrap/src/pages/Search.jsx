@@ -52,7 +52,7 @@ function Search() {
         }
       }
     }
-    fetch('http://localhost:5000/search_stock', {
+    fetch('/api/search_stock', {
       method: "POST",
       mode: "cors",
       headers: {
@@ -135,8 +135,8 @@ function Search() {
             </div>
           </div>)
         })}
-        <div class="text-center border-bottom">
-          <Button class="btn btn-primary mb-3" hidden={!showMore} onClick={(e)=>{loadMore()}}>Load more</Button>
+        <div className="text-center border-bottom">
+          <Button className="btn btn-primary mb-3" hidden={!showMore} onClick={(e)=>{loadMore()}}>Load more</Button>
         </div>
       </div>
     </>

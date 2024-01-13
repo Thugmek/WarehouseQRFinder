@@ -16,7 +16,7 @@ function FindBox() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/find/'+box_id, {
+    fetch('/api/find/'+box_id, {
       method: "GET",
       mode: "cors",
       headers: {

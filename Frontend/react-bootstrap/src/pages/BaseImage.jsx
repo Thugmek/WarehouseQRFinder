@@ -16,7 +16,7 @@ function BaseImage() {
   const canvas = createRef()
 
   useEffect(() => {
-    fetch('http://localhost:5000/base-img', {
+    fetch('/api/base-img', {
       method: "GET",
       mode: "cors",
       headers: {
@@ -29,7 +29,7 @@ function BaseImage() {
         setData(data)
       })
       .catch((e) => console.error(e))
-    fetch('http://localhost:5000/regions', {
+    fetch('/api/regions', {
       method: "GET",
       mode: "cors",
       headers: {
@@ -108,7 +108,7 @@ function BaseImage() {
   }
 
   function saveRegions(){
-    fetch('http://localhost:5000/regions', {
+    fetch('api/regions', {
       method: "POST",
       mode: "cors",
       headers: {
