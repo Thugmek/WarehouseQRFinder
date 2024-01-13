@@ -22,3 +22,32 @@
 .box-id {
   font-size: small;
 }
+
+.box-label h1 {
+  text-align: center;
+}
+
+.box-label table{
+  width: 100%;
+}
+
+.box-label-1 {
+  width: 20cm;
+  height: 74mm;
+  border-style: double;
+  padding: 2mm;
+  margin: 10px;
+}
+
+.box-label-1 h1{
+  font-size: 6em;
+}
+
+.box-label-1 td:nth-child(1){
+  width: 7cm;
+}
+
+.box-label-1 QRCode {
+  height: "7cm";
+  width: "7cm";
+}

@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { BiSearchAlt, BiLayer } from 'react-icons/bi';
-import { FiSettings, FiSearch, FiLayers, FiUser, FiImage } from 'react-icons/fi';
+import { FiSettings, FiSearch, FiLayers, FiUser, FiImage, FiPenTool } from 'react-icons/fi';
 
 import './sidebar.css';
 
@@ -8,6 +8,7 @@ function Sidebar() {
   const items = [
     { path: '/', title: 'Search', icon: <FiSearch/> },
     { path: '/base_image', title: 'Base Image', icon: <FiImage/> },
+    { path: '/labels-generator', title: 'Labels Generator', icon: <FiPenTool/> },
   ];
 
   return (
