@@ -66,11 +66,7 @@ function Search() {
     })
       .then(response => response.json())
       .then(data => {
-        console.log("data", data)
-        console.log("offset", offset)
         setNextOffset(offset+data['rows'].length)
-        console.log("length", data['rows'].length)
-        console.log("next offset", nextOffset)
         if(offset>0){
           setItems([...items,...data['rows']])
           setNextOffset(nextOffset+data['rows'].length)
@@ -134,7 +130,7 @@ function Search() {
             </div>
             <div className="col-auto d-none d-lg-block">
               <div className="pt-3 pe-3">
-                {item.goods.photoUrl?<a href={'https://trilab.factorify.cloud/'+item.goods.photoUrl}><img src={'https://trilab.factorify.cloud/'+item.goods.photoUrl} height={100}></img></a>:<Jdenticon name={item.goods.name} height="96px" width="96px" />}
+                {item.goods.photoUrl?<a href={'https://trilab.factorify.cloud/'+item.goods.photoUrl}><img src={'https://trilab.factorify.cloud/'+item.goods.photoUrl} height={100}></img></a>:""}
               </div>
             </div>
           </div>)

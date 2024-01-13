@@ -12,6 +12,13 @@
   margin: auto;
 }
 
+.box-image-smaller {
+  max-height: 50vh;
+  width: auto;
+  height: auto;
+  margin: auto;
+}
+
 .box-id {
   font-size: small;
 }

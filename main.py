@@ -73,7 +73,7 @@ def get_find(id):
             "image": png_as_text.decode("utf-8")
         }
     else:
-        return {}
+        return {}, 404
 
 @app.route('/search_stock',methods=["POST"])
 def post_search_stock():
