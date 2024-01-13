@@ -22,7 +22,7 @@ function ConsoleNavbar() {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark sticky-top bg-dark p-1 shadow">
       <div className="d-flex flex-grow-1">
-        <a className="navbar-brand d-flex pt-2" href="/console">
+        <a className="navbar-brand d-flex pt-2" href="/">
           <img src={logo} alt="console logo" className="navbar-logo" />WareFinder
         </a>
         <div className="w-100 text-right">

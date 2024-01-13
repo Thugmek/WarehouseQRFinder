@@ -26,10 +26,9 @@ function BaseImage() {
     })
       .then(response => response.json())
       .then(data => {
-        console.log("data", data)
         setData(data)
       })
-      .catch((e) => console.log(e))
+      .catch((e) => console.error(e))
     fetch('http://localhost:5000/regions', {
       method: "GET",
       mode: "cors",
@@ -40,10 +39,9 @@ function BaseImage() {
     })
       .then(response => response.json())
       .then(data => {
-        console.log("regions", data)
         setRegions(data.regions.map(region => {return{"rect":region, "highlighted":false}}))
       })
-      .catch((e) => console.log(e))
+      .catch((e) => console.console.error(e))
   }, []);
 
   useEffect(() => {
@@ -110,7 +108,6 @@ function BaseImage() {
   }
 
   function saveRegions(){
-    console.log("Save regions")
     fetch('http://localhost:5000/regions', {
       method: "POST",
       mode: "cors",
