@@ -79,7 +79,7 @@ class QReader:
         return self.detector.detect(image=image, is_bgr=is_bgr)
 
     def decode(self, image: np.ndarray, detection_result: dict[str, np.ndarray|float|tuple[float|int, float|int]]) -> \
-            (str, Decoded):
+            (str, Decoded, float):
         """
         This method decodes a single QR code on the given image, described by a detection_result.
 
@@ -94,7 +94,7 @@ class QReader:
         :return: str|None. The decoded content of the QR code or None if it can not be read.
         """
         # Crop the image if a bounding box is given
-        decodedQR = self._decode_qr_zbar(image=image, detection_result=detection_result)
+        decodedQR, scale_factor = self._decode_qr_zbar(image=image, detection_result=detection_result)
         if len(decodedQR) > 0:
             decoded_str = decodedQR[0].data.decode('utf-8')
             for encoding in self.reencode_to:
@@ -108,8 +108,8 @@ class QReader:
                     # When double decoding fails, just return the first decoded string with utf-8
                     warn(f'Double decoding failed for {self.reencode_to}. Returning utf-8 decoded string.')
 
-            return decoded_str, decodedQR[0]
-        return None, None
+            return decoded_str, decodedQR[0], scale_factor
+        return None, None, 0
 
     def detect_and_decode(self, image: np.ndarray, return_detections: bool = False, is_bgr: bool = False) -> \
             tuple[dict[str, np.ndarray | float | tuple[float | int, float | int]], str | None] | tuple[str | None, ...]:
@@ -173,8 +173,8 @@ class QReader:
         }
 
     def _decode_qr_zbar(self, image: np.ndarray,
-                        detection_result: dict[str, np.ndarray | float | tuple[float | int, float | int]]) -> list[
-        Decoded]:
+                        detection_result: dict[str, np.ndarray | float | tuple[float | int, float | int]]) -> (list[
+        Decoded], float):
         """
         Try to decode the QR code just with pyzbar, pre-processing the image if it fails in different ways that
         sometimes work.
@@ -201,11 +201,11 @@ class QReader:
                                             interpolation=cv2.INTER_CUBIC)
                 decodedQR = decodeQR(image=rescaled_image, symbols=[ZBarSymbol.QRCODE])
                 if len(decodedQR) > 0:
-                    return decodedQR
+                    return decodedQR, scale_factor
                 # For QRs with black background and white foreground, try to invert the image
                 decodedQR = decodeQR(image=255 - rescaled_image, symbols=[ZBarSymbol.QRCODE])
                 if len(decodedQR) > 0:
-                    return decodedQR
+                    return decodedQR, scale_factor
 
                 # If it not works, try to parse to grayscale (if it is not already)
                 if len(rescaled_image.shape) == 3:
@@ -216,7 +216,7 @@ class QReader:
                     gray = rescaled_image
                 decodedQR = self.__threshold_and_blur_decodings(image=gray, blur_kernel_sizes=((5, 5), (7, 7)))
                 if len(decodedQR) > 0:
-                    return decodedQR
+                    return decodedQR, scale_factor
 
                 if len(rescaled_image.shape) == 3:
                     # If it not works, try to sharpen the image
@@ -226,9 +226,9 @@ class QReader:
                     sharpened_gray = cv2.filter2D(src=rescaled_image, ddepth=-1, kernel=_SHARPEN_KERNEL)
                 decodedQR = self.__threshold_and_blur_decodings(image=sharpened_gray, blur_kernel_sizes=((3, 3),))
                 if len(decodedQR) > 0:
-                    return decodedQR
+                    return decodedQR, scale_factor
 
-        return []
+        return [], 1
 
     def __correct_perspective(self, image: np.ndarray, padded_quad_xy: np.ndarray) -> np.ndarray:
         """

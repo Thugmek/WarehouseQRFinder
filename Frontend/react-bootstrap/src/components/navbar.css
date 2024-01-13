@@ -1,0 +1,11 @@
+.navbar-logo {
+  pointer-events: none;
+  width: 48;
+  height: 48px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.navbar-brand {
+  font-size: 2em;
+}
