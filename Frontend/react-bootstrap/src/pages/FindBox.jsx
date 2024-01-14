@@ -30,7 +30,10 @@ function FindBox() {
         if(response.status == 404){
           setData()
         }else{
-          setData(response.json())
+          response.json().then((body) => {
+            console.log(body)
+            setData(body)
+          })
         }
       })
   }, []);
