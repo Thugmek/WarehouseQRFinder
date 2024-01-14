@@ -28,14 +28,6 @@ def reload_config():
         js["regions"] = []
         changed = True
 
-    if "camera" not in js:
-        js["camera"] = 0
-        changed = True
-
-    if "oversample" not in js:
-        js["oversample"] = 1
-        changed = True
-
     if "min_cycle_time" not in js:
         js["min_cycle_time"] = 20
         changed = True

@@ -1,0 +1,23 @@
+{
+    "regions": [
+        [
+            890,
+            990,
+            370,
+            510
+        ]
+    ],
+    "min_cycle_time": 5,
+    "factorify-server": "<CHANGE-ME>",
+    "factorify-login": "<CHANGE-ME>",
+    "factorify-password": "<CHANGE-ME>",
+    "image_source": {
+        "type": "camera",
+        "config": {
+            "camera_id": 0,
+            "oversample": 1,
+            "width": 3000,
+            "height": 3000
+        }
+    }
+}

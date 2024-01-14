@@ -9,14 +9,24 @@ import time
 from finder import find_qr_codes
 import factorify
 import config
+import image_sources
 
 should_run = True
 app_config = config.get_config()
 
 app = Flask(__name__)
 CORS(app)
-camera_id = app_config["camera"]
-num_images = app_config["oversample"]
+
+source_type = app_config["image_source"]["type"]
+source_config = app_config["image_source"]["config"]
+if source_type == "camera":
+    image_source = image_sources.CameraSource(source_config)
+elif source_type == "file":
+    image_source = image_sources.FileSource(source_config)
+elif source_type == "url":
+    image_source = image_sources.URLSource(source_config)
+else:
+    image_source = None
 
 min_time = app_config["min_cycle_time"]
 
@@ -91,39 +101,15 @@ def scanner():
     global found_qrs
     global last_image
 
-    cap = cv2.VideoCapture(camera_id)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 2592)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1944)
-    cap.set(cv2.CAP_PROP_FORMAT, 0)
-
     while should_run:
         time_start = float(time.time())
-        print("capturing images...")
-        image_data = []
-        for img in range(num_images):
-            print(f"image {img}")
-            ret, frame = cap.read()
-            if ret:
-                #image_data.append(frame[0:1943, 900:2080])
-                image_data.append(frame)
-            else:
-                print("INVALID!")
 
-        print(f"Calculating average from {len(image_data)} images.")
-        avg_image = image_data[0]
-        for i in range(len(image_data)):
-            if i == 0:
-                pass
-            else:
-                alpha = 1.0 / (i + 1)
-                beta = 1.0 - alpha
-                avg_image = cv2.addWeighted(image_data[i], alpha, avg_image, beta, 0.0)
-        last_image = avg_image
+        last_image = image_source.get_image()
         qrs = []
         n = 0
         for region in app_config["regions"]:
             print(f"Detecting region {n} - {region}")
-            region_image = avg_image[region[1]:region[1]+region[3],region[0]:region[0]+region[2]]
+            region_image = last_image[region[1]:region[1]+region[3],region[0]:region[0]+region[2]]
             n += 1
             qrs += find_qr_codes(region_image,region)
         for qr in qrs:

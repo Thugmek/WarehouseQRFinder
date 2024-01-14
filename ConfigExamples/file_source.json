@@ -1,0 +1,20 @@
+{
+    "regions": [
+        [
+            620,
+            220,
+            530,
+            570
+        ]
+    ],
+    "min_cycle_time": 5,
+    "factorify-server": "<CHANGE-ME>",
+    "factorify-login": "<CHANGE-ME>",
+    "factorify-password": "<CHANGE-ME>",
+    "image_source": {
+        "type": "file",
+        "config": {
+            "file": "test-input.png"
+        }
+    }
+}
