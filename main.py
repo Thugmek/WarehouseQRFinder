@@ -34,6 +34,7 @@ min_time = app_config["min_cycle_time"]
 last_image = cv2.imread("test-input.png")
 
 found_qrs = {}
+scan_times = []
 
 
 @app.route('/regions')
@@ -56,6 +57,12 @@ def post_regions():
 @app.route('/list')
 def get_list():
     return list(a for a in found_qrs)
+
+@app.route('/scan-times')
+def get_scan_times():
+    return {
+        "scan_times": scan_times
+    }
 
 @app.route('/base-img')
 def get_base_img():
@@ -100,6 +107,7 @@ def post_search_stock():
 def scanner():
     global found_qrs
     global last_image
+    global scan_times
 
     while should_run:
         time_start = float(time.time())
@@ -116,6 +124,10 @@ def scanner():
             found_qrs[qr['text']] = qr["quad"]
         print(f"Found total {len(found_qrs)} QRs")
         time_delta = float(time.time()) - time_start
+        if len(scan_times) < 30:
+            scan_times.append(time_delta)
+        else:
+            scan_times = scan_times[1:] + [time_delta]
         if time_delta < min_time:
             print(f"Sleeping for {int(min_time - time_delta)} seconds")
             time.sleep(min_time - time_delta)
