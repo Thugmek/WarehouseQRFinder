@@ -6,17 +6,16 @@ import QRCode from "react-qr-code";
 function LabelsPrintout() {
   const title = 'Labels Generator';
 
-  const [labels, setLabels] = useState([]);
-  const navigate = useNavigate();
+  var labels = []
 
-  useEffect(() => {
-    const lbls = localStorage.getItem('labels');
-    if(lbls){
-      setLabels(JSON.parse(lbls))
-    }else{
-      localStorage.setItem('labels', JSON.stringify([]))
-    }
-  }, []);
+  const lbls = localStorage.getItem('labels');
+  if(lbls){
+    labels = JSON.parse(lbls)
+  }else{
+    localStorage.setItem('labels', JSON.stringify([]))
+  }
+
+  window.onload = function() { window.print(); }
 
   function makeid() {
     let result = '';
