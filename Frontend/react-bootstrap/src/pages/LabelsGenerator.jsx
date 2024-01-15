@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Form, Button, InputGroup} from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
 import Jdenticon from '../components/Jdenticon';
 import useAuth from '../hooks/useAuth';
 import { FiSave, FiPlus, FiTrash2, FiCrosshair } from "react-icons/fi";
@@ -10,6 +11,7 @@ function LabelsGenerator() {
   const title = 'Labels Generator';
 
   const [labels, setLabels] = useState([]);
+  const [variant, setVariant] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,6 +20,12 @@ function LabelsGenerator() {
       setLabels(JSON.parse(lbls))
     }else{
       localStorage.setItem('labels', JSON.stringify([]))
+    }
+    const vr = localStorage.getItem('labels-size');
+    if(vr){
+      setVariant(vr)
+    }else{
+      localStorage.setItem('labels-size', "Filament Box")
     }
   }, []);
 
@@ -62,6 +70,11 @@ function LabelsGenerator() {
     window.open("/labels-printout", '_blank')
   }
 
+  function changeVariant(variant){
+    setVariant(variant)
+    localStorage.setItem('labels-size', variant)
+  }
+
   return (
     <>
       <Helmet>
@@ -71,6 +84,16 @@ function LabelsGenerator() {
         <div
           className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 className="h2">{title}</h1>
+          <Dropdown>
+            <Dropdown.Toggle id="dropdown-basic">
+              {variant}
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={(e) => {changeVariant("Filament Box")}}>Filament Box</Dropdown.Item>
+              <Dropdown.Item onClick={(e) => {changeVariant("Titan Box")}}>Titan Box</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         </div>
         {labels.map((label, i) => {
           return(

@@ -37,7 +37,7 @@
   height: 70mm;
   border-style: double;
   padding: 2mm;
-  margin: 10px;
+  margin: 0;
 }
 
 .box-label-1 h1{
@@ -51,6 +51,29 @@
 .box-label-1 .qrcode {
   height: 60mm;
   width: 60mm;
+  display: block;
+  margin: auto;
+}
+
+.box-label-2 {
+  width: 12cm;
+  height: 60mm;
+  border-style: double;
+  padding: 2mm;
+  margin: 0;
+}
+
+.box-label-2 h1{
+  font-size: 4em;
+}
+
+.box-label-2 td:nth-child(1){
+  width: 55mm;
+}
+
+.box-label-2 .qrcode {
+  height: 50mm;
+  width: 50mm;
   display: block;
   margin: auto;
 }
