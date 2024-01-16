@@ -56,15 +56,15 @@
 }
 
 .box-label-2 {
-  width: 12cm;
-  height: 60mm;
+  width: 10cm;
+  height: 58mm;
   border-style: double;
   padding: 2mm;
   margin: 0;
 }
 
 .box-label-2 h1{
-  font-size: 4em;
+  font-size: 2em;
 }
 
 .box-label-2 td:nth-child(1){

@@ -26,6 +26,7 @@ function LabelsGenerator() {
       setVariant(vr)
     }else{
       localStorage.setItem('labels-size', "Filament Box")
+      setVariant("Filament Box")
     }
   }, []);
 
