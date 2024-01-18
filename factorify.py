@@ -1,5 +1,5 @@
 import requests
-import time
+import logging
 
 import config
 
@@ -16,16 +16,16 @@ def login():
     })
     js = resp.json()
     if not 'session' in js or not 'token' in js['session']:
-        print("Failed to login")
+        logging.error("Failed to login")
         return
     global _token
     _token = resp.json()['session']['token']
-    print("Logged in successfully")
+    logging.info("Logged in successfully")
 
 
 def logout():
     requests.post(f"{server}/api/logout?token={_token}")
-    print("Logged out...")
+    logging.info("Logged out...")
 
 
 def get_stock_items(filter_by_column, offset):

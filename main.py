@@ -5,6 +5,9 @@ from flask_cors import CORS
 import threading
 import base64
 import time
+import logging
+
+logging.basicConfig(filename='warefinder.log', encoding='utf-8', level=logging.DEBUG)
 
 from finder import find_qr_codes
 import factorify
@@ -80,7 +83,6 @@ def get_base_img():
 @app.route('/find/<id>')
 def get_find(id):
     if id in found_qrs:
-        print(found_qrs[id])
         pts = np.asarray(found_qrs[id]).reshape((-1, 1, 2))
         img = cv2.polylines(last_image, [pts], True, (0,255,0), 10)
         retval, buffer = cv2.imencode('.jpg', img)
@@ -95,7 +97,6 @@ def get_find(id):
 @app.route('/search_stock',methods=["POST"])
 def post_search_stock():
     data = request.json
-    print(data)
     fbc = {}
     offset = 0
     if "filterByColumn" in data:
@@ -108,29 +109,32 @@ def scanner():
     global found_qrs
     global last_image
     global scan_times
-
+    logging.info(f"Scanner loop started.")
     while should_run:
-        time_start = float(time.time())
+        try:
+            time_start = float(time.time())
 
-        last_image = image_source.get_image()
-        qrs = []
-        n = 0
-        for region in app_config["regions"]:
-            print(f"Detecting region {n} - {region}")
-            region_image = last_image[region[1]:region[1]+region[3],region[0]:region[0]+region[2]]
-            n += 1
-            qrs += find_qr_codes(region_image,region)
-        for qr in qrs:
-            found_qrs[qr['text']] = qr["quad"]
-        print(f"Found total {len(found_qrs)} QRs")
-        time_delta = float(time.time()) - time_start
-        if len(scan_times) < 30:
-            scan_times.append(time_delta)
-        else:
-            scan_times = scan_times[1:] + [time_delta]
-        if time_delta < min_time:
-            print(f"Sleeping for {int(min_time - time_delta)} seconds")
-            time.sleep(min_time - time_delta)
+            last_image = image_source.get_image()
+            qrs = []
+            n = 0
+            for region in app_config["regions"]:
+                logging.debug(f"Detecting region {n} - {region}")
+                region_image = last_image[region[1]:region[1]+region[3],region[0]:region[0]+region[2]]
+                n += 1
+                qrs += find_qr_codes(region_image,region)
+            for qr in qrs:
+                found_qrs[qr['text']] = qr["quad"]
+            logging.info(f"Found total {len(found_qrs)} QRs")
+            time_delta = float(time.time()) - time_start
+            if len(scan_times) < 30:
+                scan_times.append(time_delta)
+            else:
+                scan_times = scan_times[1:] + [time_delta]
+            if time_delta < min_time:
+                logging.info(f"Sleeping for {int(min_time - time_delta)} seconds")
+                time.sleep(min_time - time_delta)
+        except Exception as e:
+            logging.exception(e)
 
 
 
