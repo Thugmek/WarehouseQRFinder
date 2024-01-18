@@ -52,7 +52,7 @@ function LabelsPrintout() {
       </Helmet>
       {labels.map((label) => {
         return(
-          <div width="14cm" height="7cm" className={'box-label ' + boxLabelClass}>
+          <div className={'box-label ' + boxLabelClass}>
             <table>
               <tr>
                 <td><QRCode className='qrcode' level="H" value={label.id?label.id:makeid()}/></td>
