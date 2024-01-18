@@ -28,6 +28,8 @@ elif source_type == "file":
     image_source = image_sources.FileSource(source_config)
 elif source_type == "url":
     image_source = image_sources.URLSource(source_config)
+elif source_type == "streamed":
+    image_source = image_sources.StreamedCameraSource(source_config)
 else:
     image_source = None
 

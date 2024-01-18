@@ -35,6 +35,20 @@ class URLSource(GenericSource):
         arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
         return cv2.imdecode(arr, -1)
 
+class StreamedCameraSource(GenericSource):
+    def __init__(self, config):
+        super().__init__(config)
+        if "url" not in config:
+            raise Exception(f"Required field 'url' is missing")
+
+        self.url = config["url"]
+
+    def get_image(self):
+        resp = urllib.request.urlopen(self.url)
+        image = np.asarray(bytearray(resp.read()), dtype="uint8")
+        return cv2.imdecode(image, cv2.IMREAD_COLOR)  # cv2.IMREAD_COLOR in OpenCV 3.1
+
+
 
 class CameraSource(GenericSource):
     def __init__(self, config):
