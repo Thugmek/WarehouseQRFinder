@@ -15,6 +15,22 @@ function LabelsPrintout() {
     localStorage.setItem('labels', JSON.stringify([]))
   }
 
+  var variant = "Filament Box"
+
+  const vr = localStorage.getItem('labels-size');
+  if(vr){
+    variant = vr
+  }else{
+    localStorage.setItem('labels', "Filament Box")
+  }
+
+  var boxLabelClass = ""
+  if (variant == "Filament Box"){
+    boxLabelClass = "box-label-1"
+  }else if(variant == "Titan Box"){
+    boxLabelClass = "box-label-2"
+  }
+
   window.onload = function() { window.print(); }
 
   function makeid() {
@@ -36,7 +52,7 @@ function LabelsPrintout() {
       </Helmet>
       {labels.map((label) => {
         return(
-          <div width="14cm" height="7cm" className='box-label box-label-1'>
+          <div width="14cm" height="7cm" className={'box-label ' + boxLabelClass}>
             <table>
               <tr>
                 <td><QRCode className='qrcode' level="H" value={label.id?label.id:makeid()}/></td>
