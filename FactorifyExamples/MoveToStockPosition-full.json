@@ -1,0 +1,113 @@
+{
+    "type": "TRANSFER",
+    "position": "V7SQ17S",
+    "onlinePhysicalInventory": false,
+    "batchPreparation": false,
+    "moves": [
+        {
+            "id": null,
+            "goodsId": null,
+            "stockItemId": null,
+            "goods": {
+                "id": 3273,
+                "code": null,
+                "name": "Držák - Pojistkový držák T0347RA ASSEMBLED",
+                "nonStock": false,
+                "type": {
+                    "id": 7,
+                    "addOrderToBatchNumber": false,
+                    "vatClassification": {
+                        "id": 21,
+                        "stateCode": null,
+                        "referenceName": "Ostatní zboží"
+                    },
+                    "alternativeUnit2": null,
+                    "referenceName": "Konstrukce"
+                },
+                "colorHex": null,
+                "unit": "pc",
+                "alternativeUnitRatio": null,
+                "distinguishBatches": false,
+                "perishable": false,
+                "shelfLifeMonths": null,
+                "allowDuplicateSerialNumber": false,
+                "referenceName": "3273 Držák - Pojistkový držák T0347RA ASSEMBLED"
+            },
+            "stock": {
+                "id": 9,
+                "referenceName": "Vývoj sklad"
+            },
+            "position": null,
+            "stockOrderItem": null,
+            "batch": null,
+            "cancelledQuantity": 0,
+            "stockOrderItemQuantity": null,
+            "stockOrderItemDeliveredQuantity": null,
+            "invoicedQuantity": null,
+            "notInvoicedQuantity": null,
+            "expiresAt": null,
+            "productionDate": null,
+            "forceRelease": false,
+            "state": "DONE",
+            "exportingProcessState": 0,
+            "exportBatchId": null,
+            "cancelledStockMove": null,
+            "scrapProtocol": null,
+            "deliveryBillItem": null,
+            "movedBy": null,
+            "movedAt": null,
+            "reservingBatch": null,
+            "accountingDocumentItems": [],
+            "pricePerUnitDomesticCurrency": null,
+            "additionalCostPerUnitDomesticCurrency": null,
+            "delivered": false,
+            "batchNumber": null,
+            "alternativeUnit2ParameterA": null,
+            "alternativeUnit2ParameterB": null,
+            "alternativeUnit2ParameterC": null,
+            "alternativeUnit2ParameterD": null,
+            "consumingSalesOrderIds": null,
+            "quantity": -15,
+            "note": null
+        },
+        {
+            "batch": null,
+            "batchNumber": null,
+            "goods": {
+                "id": 3273,
+                "code": null,
+                "name": "Držák - Pojistkový držák T0347RA ASSEMBLED",
+                "nonStock": false,
+                "type": {
+                    "id": 7,
+                    "addOrderToBatchNumber": false,
+                    "vatClassification": {
+                        "id": 21,
+                        "stateCode": null,
+                        "referenceName": "Ostatní zboží"
+                    },
+                    "alternativeUnit2": null,
+                    "referenceName": "Konstrukce"
+                },
+                "colorHex": null,
+                "unit": "pc",
+                "alternativeUnitRatio": null,
+                "distinguishBatches": false,
+                "perishable": false,
+                "shelfLifeMonths": null,
+                "allowDuplicateSerialNumber": false,
+                "referenceName": "3273 Držák - Pojistkový držák T0347RA ASSEMBLED"
+            },
+            "stock": {
+                "id": 9,
+                "referenceName": ""
+            },
+            "quantity": 15,
+            "position": "V7SQ17S",
+            "reservingBatch": null,
+            "consumingSalesOrderIds": null
+        }
+    ],
+    "attachments": [],
+    "version": 0
+}

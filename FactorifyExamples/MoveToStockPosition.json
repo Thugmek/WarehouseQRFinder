@@ -1,0 +1,28 @@
+{
+    "type": "TRANSFER",
+    "position": "V7SQ17S",
+    "moves": [
+        {
+            "goods": {
+                "id": 3273
+            },
+            "stock": {
+                "id": 9
+            },
+            "quantity": -15
+        },
+        {
+            "batch": null,
+            "batchNumber": null,
+            "goods": {
+                "id": 3273
+            },
+            "stock": {
+                "id": 9
+            },
+            "quantity": 15,
+            "position": "V7SQ17S"
+        }
+    ],
+    "version": 0
+}
