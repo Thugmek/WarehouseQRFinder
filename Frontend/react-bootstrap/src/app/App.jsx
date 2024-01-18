@@ -12,6 +12,7 @@ import LabelsGenerator from '../pages/LabelsGenerator';
 import LabelsPrintout from '../pages/LabelsPrintout';
 
 import './customStyles.css';
+import SetBox from '../pages/SetBox';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/" element={<ConsoleLayout />}>
             <Route path="" element={<Search />} />
             <Route path="find_box/:box_id" element={<FindBox />} />
+            <Route path="set_box" element={<SetBox />} />
             <Route path="base_image" element={<BaseImage />} />
             <Route path="labels-generator" element={<LabelsGenerator />} />
             <Route path="not-found" element={<NotFound />} />
