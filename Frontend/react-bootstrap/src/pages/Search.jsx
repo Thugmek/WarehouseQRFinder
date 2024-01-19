@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Form, Button, InputGroup} from 'react-bootstrap';
 import Jdenticon from '../components/Jdenticon';
 import useAuth from '../hooks/useAuth';
+import { backend_server } from '../common/constants';
 
 function Search() {
   const title = 'Search';
@@ -52,7 +53,7 @@ function Search() {
         }
       }
     }
-    fetch('/api/search_stock', {
+    fetch(backend_server+'/search_stock', {
       method: "POST",
       mode: "cors",
       headers: {

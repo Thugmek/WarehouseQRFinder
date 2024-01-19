@@ -2,6 +2,7 @@ import { useState, useEffect, createRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Button, InputGroup, InputGroupAppend } from 'react-bootstrap';
 import { FiSave, FiPlus, FiTrash2, FiCrosshair } from "react-icons/fi";
+import { backend_server } from '../common/constants';
 
 function BaseImage() {
 
@@ -16,7 +17,7 @@ function BaseImage() {
   const canvas = createRef()
 
   useEffect(() => {
-    fetch('/api/base-img', {
+    fetch(backend_server+'/base-img', {
       method: "GET",
       mode: "cors",
       headers: {
@@ -29,7 +30,7 @@ function BaseImage() {
         setData(data)
       })
       .catch((e) => console.error(e))
-    fetch('/api/regions', {
+    fetch(backend_server+'/regions', {
       method: "GET",
       mode: "cors",
       headers: {
@@ -108,7 +109,7 @@ function BaseImage() {
   }
 
   function saveRegions(){
-    fetch('api/regions', {
+    fetch(backend_server+'/regions', {
       method: "POST",
       mode: "cors",
       headers: {

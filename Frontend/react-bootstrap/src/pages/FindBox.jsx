@@ -6,6 +6,7 @@ import Alert from 'react-bootstrap/Alert';
 import Jdenticon from '../components/Jdenticon';
 import useAuth from '../hooks/useAuth';
 import { useParams } from "react-router-dom";
+import { backend_server } from '../common/constants';
 
 function FindBox() {
   let { box_id } = useParams();
@@ -16,7 +17,7 @@ function FindBox() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/find/'+box_id, {
+    fetch(backend_server+'/find/'+box_id, {
       method: "GET",
       mode: "cors",
       headers: {
