@@ -86,7 +86,8 @@ def get_base_img():
 def get_find(id):
     if id in found_qrs:
         pts = np.asarray(found_qrs[id]).reshape((-1, 1, 2))
-        img = cv2.polylines(last_image, [pts], True, (0,255,0), 10)
+        img = last_image.copy()
+        img = cv2.polylines(img, [pts], True, (0,255,0), 10)
         retval, buffer = cv2.imencode('.jpg', img)
         png_as_text = base64.b64encode(buffer)
         #return f'<img src="data:image/jpg;base64,{png_as_text.decode("utf-8")}" />'
