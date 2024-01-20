@@ -138,6 +138,7 @@ def scanner():
                 time.sleep(min_time - time_delta)
         except Exception as e:
             logging.exception(e)
+            time.sleep(5)
 
 
 
