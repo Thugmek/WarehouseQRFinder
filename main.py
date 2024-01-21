@@ -108,6 +108,16 @@ def post_search_stock():
         offset = data["offset"]
     return factorify.get_stock_items(fbc, offset)
 
+@app.route('/move_good',methods=["POST"])
+def post_move_good():
+    data = request.json
+    if "id" not in data:
+        return "Field 'id' is missing", 400
+    if "box_id" not in data:
+        return "Field 'box_id' is missing", 400
+
+    return factorify.move_items(data["id"],data["box_id"])
+
 def scanner():
     global found_qrs
     global last_image
