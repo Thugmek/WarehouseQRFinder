@@ -4,12 +4,17 @@ import Modal from 'react-bootstrap/Modal';
 import QrReader from 'react-qr-scanner'
 import { Form, InputGroup} from 'react-bootstrap';
 import { backend_server } from '../common/constants';
+import useSound from 'use-sound';
 
 function SetBoxWindow({goods, onClose}) {
     const [boxId, setBoxId] = useState("");
+    const [playSound] = useSound('/beep.mp3');
 
     function handleScan(data){
         if (data){
+            if (data.text !== boxId){
+                playSound()
+            }
             setBoxId(data.text)
         }
     }
