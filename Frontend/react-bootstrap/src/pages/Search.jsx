@@ -5,12 +5,15 @@ import { Form, Button, InputGroup} from 'react-bootstrap';
 import Jdenticon from '../components/Jdenticon';
 import useAuth from '../hooks/useAuth';
 import { backend_server } from '../common/constants';
+import SetBoxWindow from '../components/SetBoxWindow';
+import FindBoxWindow from '../components/FindBoxWindow';
 
 function Search() {
   const title = 'Search';
 
   const { getSession } = useAuth();
   const user = getSession();
+  const [modal, setModal] = useState()
   const [searchValue, setSearchValue] = useState('')
   const [searchInBoxes, setSearchInBoxes] = useState(true)
   const [searchNotInBoxes, setSearchNotInBoxes] = useState(false)
@@ -67,10 +70,16 @@ function Search() {
     })
       .then(response => response.json())
       .then(data => {
-        setNextOffset(offset+data['rows'].length)
+        length = 0
+        if(data['rows']){
+          length = data['rows'].length
+        }else{
+          data['rows'] = []
+        }
+        setNextOffset(offset+length)
         if(offset>0){
           setItems([...items,...data['rows']])
-          setNextOffset(nextOffset+data['rows'].length)
+          setNextOffset(nextOffset+length)
         }else{
           setItems(data['rows'])
         }
@@ -91,12 +100,25 @@ function Search() {
     do_search(searchValue,nextOffset);
   }
 
+  function hideModal(){
+    setModal(null)
+  }
+
+  function showBox(boxId){
+    setModal(<FindBoxWindow boxId={boxId} onClose={hideModal}/>)
+  }
+
+  function setBox(goods){
+    setModal(<SetBoxWindow goods={goods} onClose={hideModal}/>)
+  }
+
 
   return (
     <>
       <Helmet>
         <title>{title}</title>
       </Helmet>
+      {modal?modal:<></>}
       <div className="container-fluid">
         <div
           className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -124,9 +146,9 @@ function Search() {
               <strong  className="mb-0 fs-5" >{item.goods.name}</strong>
               <p className="card-text mb-auto text-muted">{item.quantity} {item.goods.unit}</p>
               <div className="d-grid d-md-block mt-4">
-                <button className="btn btn-outline-secondary btn-sm" disabled={!item.position} onClick={(e) => navigate("find_box/"+item.position)} >Show</button>
-                <button className="btn btn-outline-secondary btn-sm" onClick={(e) => window.open("find_box/abcDeF1", '_blank')} >Write-off</button>
-                <button className="btn btn-outline-secondary btn-sm">Set Box</button>
+                <button className="btn btn-outline-secondary btn-sm" disabled={!item.position} onClick={(e) => showBox(item.position)} >Show</button>
+                <button className="btn btn-outline-secondary btn-sm" disabled={true} onClick={(e) => window.open("find_box/abcDeF1", '_blank')} >Write-off</button>
+                <button className="btn btn-outline-secondary btn-sm" onClick={(e) => setBox(item.goods)}>Set Box</button>
               </div>
             </div>
             <div className="col-auto d-none d-lg-block">
