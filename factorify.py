@@ -28,7 +28,7 @@ def logout():
     logging.info("Logged out...")
 
 
-def get_stock_items(filter_by_column, offset):
+def get_stock_items(filter_by_column, offset, retry = True):
     input = {
         "filterByColumn": filter_by_column,
         "logicalOperator": "AND",
@@ -38,12 +38,17 @@ def get_stock_items(filter_by_column, offset):
         "limit": 20
     }
     resp = requests.post(f"{server}/api/query/StockItem", json=input, cookies={"securityToken": _token})
+
+    if resp.status_code == 401 and retry:
+        login()
+        return get_stock_items(filter_by_column, offset, False)
+
     if resp.status_code != 200:
         logging.warning(f"get_stock_items status code {resp.status_code} - {resp.text}")
         return {}
     return resp.json()
 
-def move_items(id, box_id):
+def move_items(id, box_id, retry = True):
     search_filter = {
         "stock": {
             "operator": "IN",
@@ -90,6 +95,11 @@ def move_items(id, box_id):
         "version": 0
     }
     resp = requests.post(f"{server}/api/stock/document", json=input_transfer, cookies={"securityToken": _token})
+
+    if resp.status_code == 401 and retry:
+        login()
+        return move_items(id, box_id, False)
+
     if resp.status_code != 200:
         logging.warning(f"get_stock_items status code {resp.status_code} - {resp.text}")
     return resp.text, resp.status_code
