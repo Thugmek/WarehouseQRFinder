@@ -31,7 +31,7 @@ function FindBoxWindow({boxId, onClose}) {
         })
     }, []);
     return (
-        <Modal show={true} style={{width: "80vw" }} onHide={onClose}>
+        <Modal show={true} className="wide-modal" onHide={onClose}>
             <Modal.Header closeButton>
                 <Modal.Title>Box {boxId}</Modal.Title>
             </Modal.Header>
