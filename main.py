@@ -6,8 +6,17 @@ import threading
 import base64
 import time
 import logging
+import logging.handlers
 
-logging.basicConfig(filename='warefinder.log', encoding='utf-8', level=logging.DEBUG)
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+formater = logging.Formatter('%(asctime)s\t%(name)s\t%(levelname)s\t%(message)s')
+fh = logging.handlers.TimedRotatingFileHandler("warefinder.log", when="m",interval=10, backupCount=10)
+fh.setFormatter(formater)
+logger.addHandler(fh)
+sh = logging.StreamHandler()
+sh.setFormatter(formater)
+logger.addHandler(sh)
 
 from finder import find_qr_codes
 import factorify
@@ -122,7 +131,7 @@ def scanner():
     global found_qrs
     global last_image
     global scan_times
-    logging.info(f"Scanner loop started.")
+    logger.info(f"Scanner loop started.")
     while should_run:
         try:
             time_start = float(time.time())
@@ -131,23 +140,23 @@ def scanner():
             qrs = []
             n = 0
             for region in app_config["regions"]:
-                logging.debug(f"Detecting region {n} - {region}")
+                logger.debug(f"Detecting region {n} - {region}")
                 region_image = last_image[region[1]:region[1]+region[3],region[0]:region[0]+region[2]]
                 n += 1
                 qrs += find_qr_codes(region_image,region)
             for qr in qrs:
                 found_qrs[qr['text']] = qr["quad"]
-            logging.info(f"Found total {len(found_qrs)} QRs")
+            logger.info(f"Found total {len(found_qrs)} QRs")
             time_delta = float(time.time()) - time_start
             if len(scan_times) < 30:
                 scan_times.append(time_delta)
             else:
                 scan_times = scan_times[1:] + [time_delta]
             if time_delta < min_time:
-                logging.info(f"Sleeping for {int(min_time - time_delta)} seconds")
+                logger.info(f"Sleeping for {int(min_time - time_delta)} seconds")
                 time.sleep(min_time - time_delta)
         except Exception as e:
-            logging.exception(e)
+            logger.exception(e)
             time.sleep(5)
 
 

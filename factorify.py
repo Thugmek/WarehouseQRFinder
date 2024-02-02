@@ -3,6 +3,7 @@ import logging
 
 import config
 
+logger = logging.getLogger("factorify")
 server = "https://trilab.factorify.cloud"
 
 _token = None
@@ -16,16 +17,16 @@ def login():
     })
     js = resp.json()
     if not 'session' in js or not 'token' in js['session']:
-        logging.error("Failed to login")
+        logger.error("Failed to login")
         return
     global _token
     _token = resp.json()['session']['token']
-    logging.info("Logged in successfully")
+    logger.info("Logged in successfully")
 
 
 def logout():
     requests.post(f"{server}/api/logout?token={_token}")
-    logging.info("Logged out...")
+    logger.info("Logged out...")
 
 
 def get_stock_items(filter_by_column, offset, retry = True):
@@ -44,7 +45,7 @@ def get_stock_items(filter_by_column, offset, retry = True):
         return get_stock_items(filter_by_column, offset, False)
 
     if resp.status_code != 200:
-        logging.warning(f"get_stock_items status code {resp.status_code} - {resp.text}")
+        logger.warning(f"get_stock_items status code {resp.status_code} - {resp.text}")
         return {}
     return resp.json()
 
@@ -101,7 +102,7 @@ def move_items(id, box_id, retry = True):
         return move_items(id, box_id, False)
 
     if resp.status_code != 200:
-        logging.warning(f"get_stock_items status code {resp.status_code} - {resp.text}")
+        logger.warning(f"get_stock_items status code {resp.status_code} - {resp.text}")
     return resp.text, resp.status_code
 
 login()

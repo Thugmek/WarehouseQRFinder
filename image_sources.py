@@ -3,6 +3,8 @@ import urllib.request
 import numpy as np
 import logging
 
+logger = logging.getLogger("image_sources")
+
 class GenericSource:
     def __init__(self, config):
         pass
@@ -71,18 +73,18 @@ class CameraSource(GenericSource):
             self.cap.set(cv2.CAP_PROP_FORMAT, config["format"])
 
     def get_image(self):
-        logging.debug("capturing images...")
+        logger.debug("capturing images...")
         image_data = []
         for img in range(self.oversample):
-            logging.debug(f"image {img}")
+            logger.debug(f"image {img}")
             ret, frame = self.cap.read()
             if ret:
                 # image_data.append(frame[0:1943, 900:2080])
                 image_data.append(frame)
             else:
-                logging.warning("Captured invalid image")
+                logger.warning("Captured invalid image")
 
-        logging.debug(f"Calculating average from {len(image_data)} images.")
+        logger.debug(f"Calculating average from {len(image_data)} images.")
         avg_image = image_data[0]
         for i in range(len(image_data)):
             if i == 0:
