@@ -19,7 +19,8 @@ sh.setFormatter(formater)
 logger.addHandler(sh)
 
 from finder import find_qr_codes
-import factorify
+#import factorify
+import local_database
 import config
 import image_sources
 
@@ -109,23 +110,38 @@ def get_find(id):
 @app.route('/search_stock',methods=["POST"])
 def post_search_stock():
     data = request.json
-    fbc = {}
     offset = 0
-    if "filterByColumn" in data:
-        fbc = data["filterByColumn"]
-    if "offset" in data:
-        offset = data["offset"]
-    return factorify.get_stock_items(fbc, offset)
+    search_string = data["search_string"] if "search_string" in data else ""
+    search_in_boxes = data["search_in_boxes"] if "searchInBoxes" in data else True
+    search_not_inBoxes = data["search_not_inBoxes"] if "searchNotInBoxes" in data else False
+    # if "offset" in data:
+    #     offset = data["offset"]
+    return local_database.fulltext_search(search_string, search_in_boxes, search_not_inBoxes)
 
-@app.route('/move_good',methods=["POST"])
-def post_move_good():
+@app.route('/create_stock_item',methods=["POST"])
+def post_create_stock_item():
     data = request.json
-    if "id" not in data:
-        return "Field 'id' is missing", 400
-    if "box_id" not in data:
-        return "Field 'box_id' is missing", 400
+    name = data["name"] if "name" in data else None
+    description = data["description"] if "description" in data else None
+    position = data["position"] if "position" in data else None
+    image = data["image"] if "image" in data else None
+    local_database.add_warehouse_item(name,description,position,image)
+    return {}, 200
 
-    return factorify.move_items(data["id"],data["box_id"])
+@app.route('/remove_stock_item',methods=["POST"])
+def post_remove_stock_item():
+    data = request.json
+    id = data["id"]
+    local_database.remove_warehouse_item(id)
+    return {}, 200
+
+@app.route('/update_stock_item',methods=["POST"])
+def post_update_stock_item():
+    data = request.json
+    id = data["id"]
+    updated_fields = data["updatedFields"]
+    local_database.update_warehouse_item(id, updated_fields)
+    return {}, 200
 
 def scanner():
     global found_qrs
@@ -166,4 +182,4 @@ if __name__ == '__main__':
     my_thread.start()
     app.run()
     should_run = False
-    factorify.logout()
+    #factorify.logout()

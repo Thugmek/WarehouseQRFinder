@@ -20,7 +20,7 @@ function SetBoxWindow({goods, onClose}) {
     }
 
     function setBox(){
-        fetch(backend_server+'/move_good', {
+        fetch(backend_server+'/update_stock_item', {
             method: "POST",
             mode: "cors",
             headers: {
@@ -28,7 +28,9 @@ function SetBoxWindow({goods, onClose}) {
             },
             body:JSON.stringify({
               "id": goods.id,
-              "box_id": boxId
+              "updatedFields": {
+                "position": boxId
+              }
             })
         }).then(response => {
             console.log("Transfer Status: ", response.status)

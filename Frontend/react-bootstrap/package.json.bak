@@ -1,4 +1,5 @@
 {
+  "proxy": "https://warefinder.local",
   "name": "cybersamx-react-bootstrap",
   "version": "0.1.0",
   "private": true,
@@ -18,15 +19,13 @@
     "react-qr-code": "^2.0.12",
     "react-qr-scanner": "^1.0.0-alpha.11",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^3.0.1",
     "use-sound": "^4.0.1",
     "web-vitals": "^1.0.1"
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-prettier": "^4.0.0",
-    "http-proxy-middleware": "^3.0.2",
-    "react-error-overlay": "6.0.9",
     "prettier": "^2.4.1"
   },
   "resolutions": {
