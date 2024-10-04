@@ -17,7 +17,7 @@ function BaseImage() {
   const canvas = createRef()
 
   useEffect(() => {
-    fetch(backend_server+'/base-img', {
+    fetch(backend_server+'/debug-img', {
       method: "GET",
       mode: "cors",
       headers: {

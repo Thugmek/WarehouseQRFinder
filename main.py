@@ -92,6 +92,23 @@ def get_base_img():
         "height": last_image.shape[0]
     }
 
+@app.route('/debug-img')
+def get_debug_img():
+    img = last_image.copy()
+    for id in found_qrs:
+        pts = np.asarray(found_qrs[id]).reshape((-1, 1, 2))
+        img = cv2.polylines(img, [pts], True, (0, 255, 0), 5)
+    retval, buffer = cv2.imencode('.jpg', img)
+    png_as_text = base64.b64encode(buffer)
+    # return f'<img src="data:image/jpg;base64,{png_as_text.decode("utf-8")}" />'
+    print(last_image.shape[1])
+    print(last_image.shape[0])
+    return {
+        "image": png_as_text.decode("utf-8"),
+        "width": last_image.shape[1],
+        "height": last_image.shape[0]
+    }
+
 @app.route('/find/<id>')
 def get_find(id):
     if id in found_qrs:
