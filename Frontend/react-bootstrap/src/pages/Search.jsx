@@ -118,6 +118,7 @@ function Search() {
           <div>
             <InputGroup className="mb-3">
               <Form.Control type="text" placeholder="Search" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+              <button className="btn btn-primary btn-sm" onClick={(e) => do_search(searchValue,0)}>Refresh</button>
             </InputGroup>
           </div>
           <div>
