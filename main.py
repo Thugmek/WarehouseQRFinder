@@ -157,6 +157,18 @@ def post_update_stock_item():
     data = request.json
     id = data["id"]
     updated_fields = data["updatedFields"]
+    if "image" in updated_fields:
+        # Downscale image for performance reason
+        nparr = np.fromstring(base64.b64decode(updated_fields["image"]), np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        height, width = img.shape[:2]
+        required_height = 200
+        aspect_ratio = width / height
+        required_width = int(required_height * aspect_ratio)
+        img = cv2.resize(img, (required_width, required_height))
+        retval, buffer = cv2.imencode('.jpg', img)
+        jpg_base64 = base64.b64encode(buffer)
+        updated_fields["image"] = jpg_base64
     local_database.update_warehouse_item(id, updated_fields)
     return {}, 200
 

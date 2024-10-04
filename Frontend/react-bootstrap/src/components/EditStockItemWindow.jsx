@@ -39,7 +39,7 @@ function EditStockItemWindow({item, onClose}) {
         var updatedFields = {}
         if(itemName !== item.name) updatedFields.name = itemName
         if(itemDescription !== item.description) updatedFields.description = itemDescription
-        if(itemImage !== item.iamge) updatedFields.image = itemImage
+        if(itemImage !== item.iamge && itemImage) updatedFields.image = itemImage
         fetch(backend_server+'/update_stock_item', {
             method: "POST",
             mode: "cors",
