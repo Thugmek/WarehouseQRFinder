@@ -3,8 +3,8 @@ from sqlalchemy.sql import text
 from sqlalchemy.dialects.mysql import TEXT, LONGTEXT
 import meilisearch
 
-db_engine = create_engine('mysql+pymysql://warefinder:warefinder@warefinder.local/warefinder', echo=True)
-meilisearch_client = meilisearch.Client('http://warefinder.local:7700', 'Trilab365')
+db_engine = create_engine('mysql+pymysql://warefinder:warefinder@10.1.20.116/warefinder', echo=True)
+meilisearch_client = meilisearch.Client('http://10.1.20.116:7700', 'Trilab365')
 meta = MetaData()
 
 warehouse_items = Table(

@@ -9,6 +9,7 @@ import BaseImage from '../pages/BaseImage';
 import AuthProvider from '../hooks/AuthProvider';
 import LabelsGenerator from '../pages/LabelsGenerator';
 import LabelsPrintout from '../pages/LabelsPrintout';
+import ImgageSources from '../pages/ImageSources';
 
 import './customStyles.css';
 
@@ -21,6 +22,7 @@ function App() {
             <Route path="" element={<Search />} />
             <Route path="base_image" element={<BaseImage />} />
             <Route path="labels-generator" element={<LabelsGenerator />} />
+            <Route path="image-sources" element={<ImgageSources />} />
             <Route path="not-found" element={<NotFound />} />
             <Route path="*" element={<Navigate to="/not-found" />} />
           </Route>

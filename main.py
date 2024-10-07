@@ -1,3 +1,5 @@
+from crypt import methods
+
 import cv2
 import numpy as np
 from flask import Flask, make_response, request
@@ -7,6 +9,8 @@ import base64
 import time
 import logging
 import logging.handlers
+
+from config import save_config
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -30,48 +34,77 @@ app_config = config.get_config()
 app = Flask(__name__)
 CORS(app)
 
-source_type = app_config["image_source"]["type"]
-source_config = app_config["image_source"]["config"]
-if source_type == "camera":
-    image_source = image_sources.CameraSource(source_config)
-elif source_type == "file":
-    image_source = image_sources.FileSource(source_config)
-elif source_type == "url":
-    image_source = image_sources.URLSource(source_config)
-elif source_type == "streamed":
-    image_source = image_sources.StreamedCameraSource(source_config)
-else:
-    image_source = None
+sources = {}
+configured_image_sources = app_config["image_sources"]
+for source in configured_image_sources:
+    if source["type"] == "camera":
+        sources[source["id"]] = {
+            "source": image_sources.CameraSource(source["config"]),
+            "regions": source["regions"]
+        }
+    elif source["type"] == "file":
+        sources[source["id"]] = {
+            "source": image_sources.FileSource(source["config"]),
+            "regions": source["regions"]
+        }
+    elif source["type"] == "url":
+        sources[source["id"]] = {
+            "source": image_sources.URLSource(source["config"]),
+            "regions": source["regions"]
+        }
+    elif source["type"] == "streamed":
+        sources[source["id"]] = {
+            "source": image_sources.StreamedCameraSource(source["config"]),
+            "regions": source["regions"]
+        }
 
 min_time = app_config["min_cycle_time"]
 
 #last_image = None
-last_image = cv2.imread("test-input.png")
+last_images = {}
+for source in sources:
+    try:
+        last_images[source] = sources[source]["source"].get_image()
+    except:
+        last_images[source] = None
 
 found_qrs = {}
 scan_times = []
 
-
-@app.route('/regions')
-def get_regions():
+@app.route('/sources')
+def get_sources():
     return {
-        "regions": app_config["regions"]
+        "sources": app_config["image_sources"]
     }
 
-@app.route('/regions', methods=["POST"])
-def post_regions():
-    global regions
-    data = request.json
-    if "regions" in data:
-        app_config["regions"] = data["regions"]
-        config.save_config()
-        return {}, 200
-    else:
-        return {}, 400
+@app.route('/source/<source_id>')
+def get_source(source_id):
+    for index, source in enumerate(app_config["image_sources"]):
+        if source["id"] == source_id:
+            return source, 200
+    return {}, 404
 
-@app.route('/list')
-def get_list():
-    return list(a for a in found_qrs)
+@app.route('/source/<source_id>', methods=["POST"])
+def post_source(source_id):
+    data = request.json
+    updated_source = {
+        "id": source_id,
+        "type": data["type"],
+        "config": data["config"],
+        "regions": data["regions"]
+    }
+    for index, source in enumerate(app_config["image_sources"]):
+        if source["id"] == source_id:
+            app_config["image_sources"][index] = updated_source
+            save_config()
+            return {}, 200
+    app_config["image_sources"].append(updated_source)
+    save_config()
+    return {}, 200
+
+@app.route('/list-qrs')
+def get_qrs():
+    return found_qrs
 
 @app.route('/scan-times')
 def get_scan_times():
@@ -79,41 +112,68 @@ def get_scan_times():
         "scan_times": scan_times
     }
 
-@app.route('/base-img')
-def get_base_img():
-    retval, buffer = cv2.imencode('.jpg', last_image)
-    png_as_text = base64.b64encode(buffer)
-    # return f'<img src="data:image/jpg;base64,{png_as_text.decode("utf-8")}" />'
-    print(last_image.shape[1])
-    print(last_image.shape[0])
-    return {
-        "image": png_as_text.decode("utf-8"),
-        "width": last_image.shape[1],
-        "height": last_image.shape[0]
-    }
+@app.route('/test-config', methods=["POST"])
+def post_test_config():
+    data = request.json
+    source = None
+    if data["type"] == "camera":
+        source = image_sources.CameraSource(data["config"])
+    elif data["type"] == "file":
+        source = image_sources.FileSource(data["config"])
+    elif data["type"] == "url":
+        source = image_sources.URLSource(data["config"])
+    elif data["type"] == "streamed":
+        source = image_sources.StreamedCameraSource(data["config"])
 
-@app.route('/debug-img')
-def get_debug_img():
-    img = last_image.copy()
-    for id in found_qrs:
-        pts = np.asarray(found_qrs[id]).reshape((-1, 1, 2))
-        img = cv2.polylines(img, [pts], True, (0, 255, 0), 5)
+    img = source.get_image()
     retval, buffer = cv2.imencode('.jpg', img)
     png_as_text = base64.b64encode(buffer)
     # return f'<img src="data:image/jpg;base64,{png_as_text.decode("utf-8")}" />'
-    print(last_image.shape[1])
-    print(last_image.shape[0])
+    print(img.shape[1])
+    print(img.shape[0])
     return {
         "image": png_as_text.decode("utf-8"),
-        "width": last_image.shape[1],
-        "height": last_image.shape[0]
+        "width": img.shape[1],
+        "height": img.shape[0]
+    }
+
+@app.route('/base-img/<source_id>')
+def get_base_img(source_id):
+    img = last_images[source_id]
+    retval, buffer = cv2.imencode('.jpg', img)
+    png_as_text = base64.b64encode(buffer)
+    # return f'<img src="data:image/jpg;base64,{png_as_text.decode("utf-8")}" />'
+    print(img.shape[1])
+    print(img.shape[0])
+    return {
+        "image": png_as_text.decode("utf-8"),
+        "width": img.shape[1],
+        "height": img.shape[0]
+    }
+
+@app.route('/debug-img/<source_id>')
+def get_debug_img(source_id):
+    img = last_images[str(source_id)].copy()
+    for id in found_qrs:
+        if found_qrs[id]["source"] == source_id:
+            pts = np.asarray(found_qrs[id]["quad"]).reshape((-1, 1, 2))
+            img = cv2.polylines(img, [pts], True, (0, 255, 0), 5)
+    retval, buffer = cv2.imencode('.jpg', img)
+    png_as_text = base64.b64encode(buffer)
+    # return f'<img src="data:image/jpg;base64,{png_as_text.decode("utf-8")}" />'
+    print(img.shape[1])
+    print(img.shape[0])
+    return {
+        "image": png_as_text.decode("utf-8"),
+        "width": img.shape[1],
+        "height": img.shape[0]
     }
 
 @app.route('/find/<id>')
 def get_find(id):
     if id in found_qrs:
-        pts = np.asarray(found_qrs[id]).reshape((-1, 1, 2))
-        img = last_image.copy()
+        pts = np.asarray(found_qrs[id]["quad"]).reshape((-1, 1, 2))
+        img = last_images[found_qrs[id]["source"]].copy()
         img = cv2.polylines(img, [pts], True, (0,255,0), 10)
         retval, buffer = cv2.imencode('.jpg', img)
         png_as_text = base64.b64encode(buffer)
@@ -173,36 +233,39 @@ def post_update_stock_item():
     return {}, 200
 
 def scanner():
-    global found_qrs
-    global last_image
+    #global found_qrs
     global scan_times
     logger.info(f"Scanner loop started.")
     while should_run:
-        try:
-            time_start = float(time.time())
+        time_start = float(time.time())
+        for source in sources:
+            try:
+                image = sources[source]["source"].get_image()
+                last_images[source] = image
+                qrs = []
+                n = 0
+                for region in sources[source]["regions"]:
+                    logger.debug(f"Detecting region {n} - {region}")
+                    region_image = image[region[1]:region[1]+region[3],region[0]:region[0]+region[2]]
+                    n += 1
+                    qrs += find_qr_codes(region_image,region)
+                for qr in qrs:
+                    found_qrs[qr['text']] = {
+                        "source": source,
+                        "quad": qr["quad"]
+                    }
+            except Exception as e:
+                logger.exception(e)
 
-            last_image = image_source.get_image()
-            qrs = []
-            n = 0
-            for region in app_config["regions"]:
-                logger.debug(f"Detecting region {n} - {region}")
-                region_image = last_image[region[1]:region[1]+region[3],region[0]:region[0]+region[2]]
-                n += 1
-                qrs += find_qr_codes(region_image,region)
-            for qr in qrs:
-                found_qrs[qr['text']] = qr["quad"]
-            logger.info(f"Found total {len(found_qrs)} QRs")
-            time_delta = float(time.time()) - time_start
-            if len(scan_times) < 30:
-                scan_times.append(time_delta)
-            else:
-                scan_times = scan_times[1:] + [time_delta]
-            if time_delta < min_time:
-                logger.info(f"Sleeping for {int(min_time - time_delta)} seconds")
-                time.sleep(min_time - time_delta)
-        except Exception as e:
-            logger.exception(e)
-            time.sleep(5)
+        logger.info(f"Found total {len(found_qrs)} QRs")
+        time_delta = float(time.time()) - time_start
+        if len(scan_times) < 30:
+            scan_times.append(time_delta)
+        else:
+            scan_times = scan_times[1:] + [time_delta]
+        if time_delta < min_time:
+            logger.info(f"Sleeping for {int(min_time - time_delta)} seconds")
+            time.sleep(min_time - time_delta)
 
 
 

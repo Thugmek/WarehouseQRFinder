@@ -10,6 +10,7 @@ function Sidebar() {
     { path: '/labels-generator', title: 'Labels Generator', icon: <FiPenTool/> },
     { separator: true },
     { path: '/base_image', title: 'Base Image', icon: <FiImage/> },
+    { path: '/image-sources', title: 'Image Sources', icon: <FiImage/> },
     //{ path: '/labels-generator', title: 'Labels Generator', icon: <FiPenTool/> },
   ];
 
