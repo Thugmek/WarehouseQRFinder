@@ -37,24 +37,10 @@ CORS(app)
 sources = {}
 configured_image_sources = app_config["image_sources"]
 for source in configured_image_sources:
-    if source["type"] == "camera":
+    src = image_sources.source_factory(source)
+    if src:
         sources[source["id"]] = {
-            "source": image_sources.CameraSource(source["config"]),
-            "regions": source["regions"]
-        }
-    elif source["type"] == "file":
-        sources[source["id"]] = {
-            "source": image_sources.FileSource(source["config"]),
-            "regions": source["regions"]
-        }
-    elif source["type"] == "url":
-        sources[source["id"]] = {
-            "source": image_sources.URLSource(source["config"]),
-            "regions": source["regions"]
-        }
-    elif source["type"] == "streamed":
-        sources[source["id"]] = {
-            "source": image_sources.StreamedCameraSource(source["config"]),
+            "source": src,
             "regions": source["regions"]
         }
 
@@ -93,6 +79,15 @@ def post_source(source_id):
         "config": data["config"],
         "regions": data["regions"]
     }
+    src = image_sources.source_factory(updated_source)
+    if src:
+        sources[source_id] = {
+            "source": src,
+            "regions": updated_source["regions"]
+        }
+    else:
+        return {}, 400
+
     for index, source in enumerate(app_config["image_sources"]):
         if source["id"] == source_id:
             app_config["image_sources"][index] = updated_source
@@ -101,6 +96,26 @@ def post_source(source_id):
     app_config["image_sources"].append(updated_source)
     save_config()
     return {}, 200
+
+
+@app.route('/source/<source_id>', methods=["DELETE"])
+def delete_source(source_id):
+    if source_id in sources:
+        del sources[source_id]
+    else:
+        return {}, 404
+
+    remove_index = -1
+    for index, source in enumerate(app_config["image_sources"]):
+        if source["id"] == source_id:
+            remove_index = index
+            break
+    if remove_index >= 0:
+        del app_config["image_sources"][remove_index]
+        save_config()
+        return {}, 200
+    else:
+        return {}, 400
 
 @app.route('/list-qrs')
 def get_qrs():
@@ -238,34 +253,37 @@ def scanner():
     logger.info(f"Scanner loop started.")
     while should_run:
         time_start = float(time.time())
-        for source in sources:
-            try:
-                image = sources[source]["source"].get_image()
-                last_images[source] = image
-                qrs = []
-                n = 0
-                for region in sources[source]["regions"]:
-                    logger.debug(f"Detecting region {n} - {region}")
-                    region_image = image[region[1]:region[1]+region[3],region[0]:region[0]+region[2]]
-                    n += 1
-                    qrs += find_qr_codes(region_image,region)
-                for qr in qrs:
-                    found_qrs[qr['text']] = {
-                        "source": source,
-                        "quad": qr["quad"]
-                    }
-            except Exception as e:
-                logger.exception(e)
+        try:
+            for source in sources:
+                try:
+                    image = sources[source]["source"].get_image()
+                    last_images[source] = image
+                    qrs = []
+                    n = 0
+                    for region in sources[source]["regions"]:
+                        logger.debug(f"Detecting region {n} - {region}")
+                        region_image = image[region[1]:region[1]+region[3],region[0]:region[0]+region[2]]
+                        n += 1
+                        qrs += find_qr_codes(region_image,region)
+                    for qr in qrs:
+                        found_qrs[qr['text']] = {
+                            "source": source,
+                            "quad": qr["quad"]
+                        }
+                except Exception as e:
+                    logger.exception(e)
 
-        logger.info(f"Found total {len(found_qrs)} QRs")
-        time_delta = float(time.time()) - time_start
-        if len(scan_times) < 30:
-            scan_times.append(time_delta)
-        else:
-            scan_times = scan_times[1:] + [time_delta]
-        if time_delta < min_time:
-            logger.info(f"Sleeping for {int(min_time - time_delta)} seconds")
-            time.sleep(min_time - time_delta)
+            logger.info(f"Found total {len(found_qrs)} QRs")
+            time_delta = float(time.time()) - time_start
+            if len(scan_times) < 30:
+                scan_times.append(time_delta)
+            else:
+                scan_times = scan_times[1:] + [time_delta]
+            if time_delta < min_time:
+                logger.info(f"Sleeping for {int(min_time - time_delta)} seconds")
+                time.sleep(min_time - time_delta)
+        except:
+            pass
 
 
 

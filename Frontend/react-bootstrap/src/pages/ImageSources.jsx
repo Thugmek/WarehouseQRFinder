@@ -28,6 +28,19 @@ function ImgageSources() {
       .catch((e) => console.error(e))
   }
 
+  function deleteImageSource(source){
+    fetch(backend_server+'/source/'+source.id, {
+        method: "DELETE",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json"
+        }
+    }).then(response => {
+        console.log("Transfer Status: ", response.status)
+        fetchSources()
+    })
+  }
+
   useEffect(() => {
     fetchSources()
   }, []);
@@ -67,7 +80,7 @@ function ImgageSources() {
               <strong className="d-inline-block mb-2 text-muted">id: {source.id}</strong>
               <div className="d-grid d-md-block mt-4">
                 <button className="btn btn-outline-secondary btn-sm" onClick={(e) => editImageSource(source)}>Edit</button>
-                <button className="btn btn-danger btn-sm" onClick={(e) => deleteStockItem(item)}>Delete</button>
+                <button className="btn btn-danger btn-sm" onClick={(e) => deleteImageSource(source)}>Delete</button>
               </div>
             </div>
             <div className="col-auto d-none d-lg-block">

@@ -5,6 +5,16 @@ import logging
 
 logger = logging.getLogger("image_sources")
 
+def source_factory(source):
+    if source["type"] == "camera":
+        return CameraSource(source["config"])
+    elif source["type"] == "file":
+        return FileSource(source["config"])
+    elif source["type"] == "url":
+        return URLSource(source["config"])
+    elif source["type"] == "streamed":
+        return StreamedCameraSource(source["config"])
+
 class GenericSource:
     def __init__(self, config):
         pass
