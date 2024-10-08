@@ -39,7 +39,9 @@ function Search() {
       body:JSON.stringify({
         "search_string": value,
         "search_in_boxes": searchInBoxes,
-        "search_not_inBoxes": searchNotInBoxes
+        "search_not_inBoxes": searchNotInBoxes,
+        "limit": 20,
+        "offset": offset
       })
     })
       .then(response => response.json())
@@ -50,15 +52,14 @@ function Search() {
         }else{
           data['rows'] = []
         }
-        setNextOffset(offset+length)
+        setNextOffset(offset+20)
         if(offset>0){
           setItems([...items,...data['rows']])
-          setNextOffset(nextOffset+length)
         }else{
           setItems(data['rows'])
         }
         //setShowMore(!data.hasOwnProperty('totalCount'))
-        setShowMore(false)
+        setShowMore(!data["is_end"])
       })
   }
 

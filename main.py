@@ -206,9 +206,11 @@ def post_search_stock():
     search_string = data["search_string"] if "search_string" in data else ""
     search_in_boxes = data["search_in_boxes"] if "searchInBoxes" in data else True
     search_not_inBoxes = data["search_not_inBoxes"] if "searchNotInBoxes" in data else False
+    limit = data["limit"] if "limit" in data else 20
+    offset = data["offset"] if "offset" in data else 0
     # if "offset" in data:
     #     offset = data["offset"]
-    return local_database.fulltext_search(search_string, search_in_boxes, search_not_inBoxes)
+    return local_database.fulltext_search(search_string, search_in_boxes, search_not_inBoxes, limit, offset)
 
 @app.route('/create_stock_item',methods=["POST"])
 def post_create_stock_item():

@@ -62,20 +62,23 @@ def get_warehouse_items():
       rows.append(row)
    return rows
 
-def fulltext_search(searched_string, in_boxes=True, not_in_boxes=False):
-   result = meilisearch_client.index('warefinder_warehouse_items').search(searched_string)
+def fulltext_search(searched_string, in_boxes=True, not_in_boxes=False, limit=20, offset=0):
+   result = meilisearch_client.index('warefinder_warehouse_items').search(searched_string,
+                                                                          {"limit": limit, "offset": offset})
+   print(result)
    if not result['hits']:
       return {
-         "rows": []
+         "rows": [],
+         "is_end": True
       }
    ids = ""
    for hit in result['hits']:
       ids = f"{ids}{hit['id']}, "
    ids = ids[:-2]
    conn = db_engine.connect()
-   result = conn.execute(text(f"SELECT * FROM warefinder.warehouse_items WHERE id IN ({ids}) ORDER BY FIELD(id, {ids});"))
+   db_result = conn.execute(text(f"SELECT * FROM warefinder.warehouse_items WHERE id IN ({ids}) ORDER BY FIELD(id, {ids});"))
    rows = []
-   for row in result:
+   for row in db_result:
       rows.append({
          "id": row[0],
          "name": row[1],
@@ -84,7 +87,8 @@ def fulltext_search(searched_string, in_boxes=True, not_in_boxes=False):
          "image": row[4]
       })
    return {
-      "rows": rows
+      "rows": rows,
+      "is_end": len(result['hits']) < limit
    }
 
 #add_warehouse_item(name="Banán", description="Zahnuté ovoce žluté barvy")
